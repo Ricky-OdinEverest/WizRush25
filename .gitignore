@@ -1,0 +1,104 @@
+###############################################################################
+#  WizardRush – Git ignore                                                     #
+#  • Standard UE + VS rules                                                   #
+#  • Extra “Content/…” folders & single files            #
+###############################################################################
+
+#──────────────────────────
+# IDE & compiler cruft
+#──────────────────────────
+.vs/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+# Xcode
+*.xcodeproj
+*.xcworkspace
+
+#──────────────────────────
+# Build / intermediate output
+#──────────────────────────
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+#──────────────────────────
+# Source-art reference only
+#──────────────────────────
+SourceArt/**/*.png
+SourceArt/**/*.tga
+
+#──────────────────────────
+# Pre-generated project files
+#──────────────────────────
+*.xcodeproj
+*.xcworkspace
+*.sln
+
+#──────────────────────────
+# Whitelist PakBlacklist files
+#──────────────────────────
+!Build/*/
+Build/*/**
+!Build/*/PakBlacklist*.txt
+!Build/**/*.ico
+
+#──────────────────────────
+# Map-built data
+#──────────────────────────
+*_BuiltData.uasset
+
+#──────────────────────────
+# PLUGINS
+#──────────────────────────
+Plugins/**/Binaries/
+Plugins/**/Intermediate/
+
+#──────────────────────────
+# EXTRA “Content/…” you asked to ignore
+#──────────────────────────
+Content/__ExternalActors__/
+Content/__ExternalObjects__/
+Content/Blueprints/
+Content/Characters/
+Content/Collections/
+Content/Cursor/
+Content/Developers/
+Content/LearningKit_Games/
+Content/LevelPrototyping/
+Content/TopDown/
+Content/Variant_Strategy/
+Content/Variant_TwinStick/
+
+Content/Actions/
+Content/Assets/
+Content/ExampleContent/
+Content/Fab/
+Content/GoodSky/
+Content/Levels/
+Content/MegaMagicVFXBundle/
+Content/moist_chunky_mud_sb0oaalp_1k/
+Content/Orasot_Bundle/
+Content/ParagonGideon/
+Content/ParagonSerath/
+Content/StarterContent/
+Content/Stylized_PBR_Nature/
+Content/ToBeMigrated/
+Content/WoodenProps/
+
+# Individual oversized assets
+Content/mYGrass_SovereignDev_YesIHavePermissionToUseThisHeLiterallySentItToMe1.uasset
+Content/NewFavLevel.umap
+Content/prisdebug.uasset
+Content/Sand2ToMud2.uasset
+Content/WizardProtagBP.uasset
+Content/AnotherPrisTEstMap.umap
+Content/DefaulyGameStart.umap
+Content/DefaulyGameStart_HLOD0_Instancing.uasset
+Content/MyEasyGrass.uasset
+Content/MyEasyGrass2.uasset
