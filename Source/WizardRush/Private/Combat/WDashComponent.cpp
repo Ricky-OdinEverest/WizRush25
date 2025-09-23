@@ -85,7 +85,7 @@ void UWDashComponent::DashCharge()
 	// Stop movement but allow rotation
 	MovementComp->MaxWalkSpeed = 0.0f;
 	// Increase the rotation rate for faster rotation during dash
-	MovementComp->RotationRate = FRotator(0.0f, 300.0f, 0.0f);  // Higher value for faster rotation
+	MovementComp->RotationRate = FRotator(0.0f, 10000.0f, 0.0f);  // Higher value for faster rotation
 	
 	CharacterRef->bUseControllerRotationYaw = false; // Reset controller rotation
 	// Spawn the TeleportMarker at the current location

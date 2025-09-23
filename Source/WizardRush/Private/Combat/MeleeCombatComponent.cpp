@@ -2,6 +2,9 @@
 
 
 #include "Combat/MeleeCombatComponent.h"
+
+#include "CombatInterface.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/EnemyInterface.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -25,10 +28,6 @@ void UMeleeCombatComponent::BeginPlay()
 
 	CharacterRef = GetOwner<ACharacter>();
 	bIsMeleeAttacking = false;
-
-	
-
-	
 	
 }
 
@@ -67,6 +66,11 @@ void UMeleeCombatComponent::HandleResetAttack()
 	bIsMeleeAttacking = false;
 }
 
+void UMeleeCombatComponent::HandleResetCombo()
+{
+	ComboCounter = 0;
+}
+
 void UMeleeCombatComponent::AttackTrace() const
 {
 	const FVector Start = CharacterRef->GetActorLocation();
@@ -84,38 +88,60 @@ void UMeleeCombatComponent::AttackTrace() const
 		ETraceTypeQuery::TraceTypeQuery1,
 		true,
 		ActorsToIgnore,
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForDuration,
 		BoxHit,
 		true
 	);
 	if (BoxHit.GetActor())
 	{
-		IEnemyInterface* HitInterface = Cast<IEnemyInterface>(BoxHit.GetActor());
-		if (HitInterface)
-		{
-			HitInterface->GetHit(BoxHit.ImpactPoint,CharacterRef );
 
-			// grab the components we need
-			UPrimitiveComponent* MyComp    = Cast<UPrimitiveComponent>(CharacterRef->GetRootComponent());
-			UPrimitiveComponent* OtherComp = BoxHit.Component.Get();
-			bool bSelfMoved                = false;                       // usually "false" for hits caused by others
-			FVector NormalImpulse          = FVector::ZeroVector;         // you can compute a real impulse if you like
+			float CharacterDamage{ 0.0f };
 
-			// now call the engine’s NotifyHit to fire OnActorHit/ReceiveHit/Blueprint Hit events
-			CharacterRef->NotifyHit(
-			  MyComp,
-			  CharacterRef,
-			  OtherComp,
-			  bSelfMoved,
-			  BoxHit.ImpactPoint,
-			  BoxHit.ImpactNormal,
-			  NormalImpulse,
-			  BoxHit
-			);
-		}
+			ICombatInterface* Combatant{ Cast<ICombatInterface>(GetOwner()) };
+
+			if (Combatant)
+			{ 
+				CharacterDamage = Combatant->GetDamage();
+
+				FDamageEvent TargetAttackedEvent;
+
+	
+				AActor* TargetActor{ BoxHit.GetActor() };
+
+				TargetActor->TakeDamage(
+					CharacterDamage,
+					TargetAttackedEvent,
+					GetOwner()->GetInstigatorController(),
+					GetOwner()  
+				);
+			}
+		
 	}
-	
-	
-	
 }
 
+
+
+/*
+IEnemyInterface* HitInterface = Cast<IEnemyInterface>(BoxHit.GetActor());
+if (HitInterface)
+{
+	HitInterface->GetHit(BoxHit.ImpactPoint,CharacterRef );
+
+
+	UPrimitiveComponent* MyComp    = Cast<UPrimitiveComponent>(CharacterRef->GetRootComponent());
+	UPrimitiveComponent* OtherComp = BoxHit.Component.Get();
+	bool bSelfMoved                = false;                      
+	FVector NormalImpulse          = FVector::ZeroVector;        
+
+
+	CharacterRef->NotifyHit(
+	  MyComp,
+	  CharacterRef,
+	  OtherComp,
+	  bSelfMoved,
+	  BoxHit.ImpactPoint,
+	  BoxHit.ImpactNormal,
+	  NormalImpulse,
+	  BoxHit
+	);
+	*/

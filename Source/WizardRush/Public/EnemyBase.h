@@ -29,4 +29,6 @@ public:
 
 	virtual void GetHit(const FVector& ImpactPoint, const AActor* Othercomp) override;
 
+	
+
 };

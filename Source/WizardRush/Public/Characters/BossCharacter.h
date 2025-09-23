@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CombatInterface.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/EnemyInterface.h"
+#include "WizardTypes.h"
 #include "BossCharacter.generated.h"
 
 UCLASS()
-class WIZARDRUSH_API ABossCharacter : public ACharacter, public IEnemyInterface
+class WIZARDRUSH_API ABossCharacter : public ACharacter, public IEnemyInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -16,9 +18,26 @@ public:
 	// Sets default values for this character's properties
 	ABossCharacter();
 
+
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EEnemyState> InitialState;
+
+	class UBlackboardComponent* BlackboardComp;
+	virtual void PossessedBy(AController* NewController) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UStatsComponent* StatsComp;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<class UBehaviorTree> BehaviorTree;
+ 
+	UPROPERTY()
+	TObjectPtr<class AAIController> EnemyAIController;
 
 public:	
 	// Called every frame
@@ -26,5 +45,11 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable)
+	void DetectPawn(APawn* DetectedPawn, APawn* PawnToDetect);
+
 	virtual void GetHit(const FVector& ImpactPoint, const AActor* Othercomp) override;
+
+	virtual float GetDamage() override;
 };

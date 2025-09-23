@@ -8,7 +8,7 @@ public class WizardRush : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GamePlayTags", "MotionWarping" , "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GamePlayTags", "MotionWarping" , "Niagara", "AIModule" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

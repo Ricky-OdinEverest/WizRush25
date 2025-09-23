@@ -64,6 +64,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HandleResetAttack();
+
+	UFUNCTION(BlueprintCallable)
+	void HandleResetCombo();
 	
 	UFUNCTION(BlueprintCallable)
 	void AttackTrace() const;

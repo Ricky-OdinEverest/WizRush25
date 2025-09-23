@@ -11,6 +11,7 @@
 #include "Combat/WDashComponent.h"
 #include "MotionWarpingComponent.h"
 #include "Combat/WProjectileCombatComponent.h"
+#include "Components/Stats/StatsComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -42,7 +43,8 @@ AWProtagWizard::AWProtagWizard()
 	DashComponent = CreateDefaultSubobject<UWDashComponent>(TEXT("Dash Component"));
 
 	ActionComp = CreateDefaultSubobject<UWActionComponent>(TEXT("Action Component"));
-	
+
+	StatsComp = CreateDefaultSubobject<UStatsComponent>(TEXT("StatsComponent"));
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
@@ -169,5 +171,10 @@ void AWProtagWizard::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	}
 	
 	
+}
+
+float AWProtagWizard::GetDamage()
+{
+	return 10.f;
 }
 

@@ -249,57 +249,17 @@ void UMeleeAutoCloseComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (!IsValid(CurrentTargetActor)) { return; }
+	if (GEngine)
+	{
+		FString ActorName = CurrentTargetActor->GetName();
+		GEngine->AddOnScreenDebugMessage(
+			-1,                          // Key (-1 = auto add)
+			0.0f,                        // Display time (0 = one frame)
+			FColor::Green,              // Text color
+			FString::Printf(TEXT("Current Target: %s"), *ActorName)
+		);
+	}
 
-	/*FVector CurrentLocation{ OwnerRef->GetActorLocation()};
-
-	// Current controller rotation
-	FRotator CurrentRotation = Controller->GetControlRotation();
-	
-	FVector TargetLocation{CurrentTargetActor->GetActorLocation()};
-	
-	// Desired rotation to look at the target
-	FRotator DesiredRotation = UKismetMathLibrary::FindLookAtRotation(CurrentLocation, TargetLocation);
-
-	// Extract only the yaw component
-	DesiredRotation.Pitch = CurrentRotation.Pitch;
-	DesiredRotation.Roll = CurrentRotation.Roll;
-
-	// Define the rotation speed (adjust as needed)
-	float RotationSpeed = 100.0f;
-
-	// Smoothly interpolate to the desired rotation
-	FRotator SmoothRotation = FMath::RInterpTo(CurrentRotation, DesiredRotation, DeltaTime, RotationSpeed);
-
-	// Apply the interpolated rotation
-	 OwnerRef->SetActorRotation(SmoothRotation);
-
-	// Optional: Debugging arrows to visualize rotation
-	DrawDebugDirectionalArrow(
-		GetWorld(),
-		CurrentLocation,
-		CurrentLocation + (CurrentRotation.Vector() * 200.0f),
-		100.0f,
-		FColor::Blue,
-		false,
-		0.1f,
-		0,
-		2.0f
-	);
-
-	DrawDebugDirectionalArrow(
-		GetWorld(),
-		CurrentLocation,
-		TargetLocation,
-		100.0f,
-		FColor::Red,
-		false,
-		0.1f,
-		0,
-		2.0f
-	);
-	
-	SlideTowardsTarget();
-	// ...*/
 }
 
 // This function handles the sliding towards the target

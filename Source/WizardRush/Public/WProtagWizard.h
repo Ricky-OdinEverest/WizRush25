@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CombatInterface.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/MainCharacterInterface.h"
 
@@ -21,7 +22,7 @@ class UAnimMontage;
 
 
 UCLASS()
-class WIZARDRUSH_API AWProtagWizard : public ACharacter, public IMainCharacterInterface
+class WIZARDRUSH_API AWProtagWizard : public ACharacter, public IMainCharacterInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -52,6 +53,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UWActionComponent* ActionComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UStatsComponent* StatsComp;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UInputMappingContext* InputMappingContext;
 
@@ -68,7 +72,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComponent;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UCameraComponent* CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = MotionWarp)
@@ -94,5 +98,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PrimaryAttackStop();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual float GetDamage() override;
 
 };
