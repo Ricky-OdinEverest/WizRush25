@@ -29,8 +29,8 @@ void UWActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
-	GEngine->AddOnScreenDebugMessage(-1, 0.0, FColor::Red, DebugMsg);
+	//FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
+	//GEngine->AddOnScreenDebugMessage(-1, 0.0, FColor::Red, DebugMsg);
 	
 }
 
@@ -56,8 +56,8 @@ bool UWActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 		{
 			if(!Action->CanStart(Instigator))
 			{
-				FString FailedMsg = FString::Printf(TEXT("Failed to run: %s"), *ActionName.ToString());
-				GEngine->AddOnScreenDebugMessage(-1, 2.0, FColor::Red, FailedMsg);
+				/*//FString FailedMsg = FString::Printf(TEXT("Failed to run: %s"), *ActionName.ToString());
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0, FColor::Red, FailedMsg);*/
 				continue;
 			}
 			Action->StartAction(Instigator);

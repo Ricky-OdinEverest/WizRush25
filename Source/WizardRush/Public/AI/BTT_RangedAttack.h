@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
+
 #include "BTT_RangedAttack.generated.h"
 
 /**
@@ -13,6 +14,12 @@ UCLASS()
 class WIZARDRUSH_API UBTT_RangedAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* AnimMontage;
+
+	
+
 
 public:
 	virtual EBTNodeResult::Type ExecuteTask(

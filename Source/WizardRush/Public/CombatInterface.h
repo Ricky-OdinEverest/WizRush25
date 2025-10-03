@@ -7,7 +7,7 @@
 #include "CombatInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, Blueprintable)
 class UCombatInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -23,6 +23,11 @@ class WIZARDRUSH_API ICombatInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-virtual float GetDamage() { return 0.0f; }
+	virtual float GetDamage() { return 0.0f; }
+
+	virtual bool CanTakeDamage() { return true; }
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void SendImpact(const FHitResult& InHit) ;
 	
 };

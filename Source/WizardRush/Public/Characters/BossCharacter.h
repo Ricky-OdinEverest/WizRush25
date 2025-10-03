@@ -14,6 +14,10 @@ class WIZARDRUSH_API ABossCharacter : public ACharacter, public IEnemyInterface,
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* HitReactAnimMontage;
+
+
 public:
 	// Sets default values for this character's properties
 	ABossCharacter();
@@ -23,10 +27,19 @@ public:
 	TEnumAsByte<EEnemyState> InitialState;
 
 	class UBlackboardComponent* BlackboardComp;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* DeathAnim;
+
+
+	
 	virtual void PossessedBy(AController* NewController) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStatsComponent* StatsComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	APawn* CombatTarget;
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,4 +65,20 @@ public:
 	virtual void GetHit(const FVector& ImpactPoint, const AActor* Othercomp) override;
 
 	virtual float GetDamage() override;
+
+	UFUNCTION()
+	void HandlePlayerDeath();
+
+	UFUNCTION(BlueprintCallable)
+	void HandleDeath();
+
+	UFUNCTION()
+	void FinishDeathAnim();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayHurtAnim();
+
 };
+
+
+

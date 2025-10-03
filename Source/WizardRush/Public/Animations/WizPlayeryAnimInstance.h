@@ -18,6 +18,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsInMelee{ false };
 	
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float CurrentVelocity{ 0.0f };
 
@@ -29,5 +30,7 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 	void HandleUpdatedTarget(AActor* NewTargetActor);
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsBlocking{ false };
 };

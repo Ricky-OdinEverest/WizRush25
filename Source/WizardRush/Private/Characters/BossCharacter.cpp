@@ -4,9 +4,12 @@
 #include "Characters/BossCharacter.h"
 
 #include "AIController.h"
+#include "WProtagWizard.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/Stats/StatsComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ABossCharacter::ABossCharacter()
@@ -15,6 +18,9 @@ ABossCharacter::ABossCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	StatsComp = CreateDefaultSubobject<UStatsComponent>(TEXT("StatsComponent"));
+
+	
+
 }
 
 void ABossCharacter::PossessedBy(AController* NewController)
@@ -44,12 +50,25 @@ void ABossCharacter::PossessedBy(AController* NewController)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PossessedBy failed — missing AIController or BehaviorTree"));
 	}
+
+	// Set default AI movement speed here
+	if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+	{
+		MoveComp->MaxWalkSpeed = 800.f; // Adjust to desired value
+	}
 }
 
 // Called when the game starts or when spawned
 void ABossCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetWorld()->GetFirstPlayerController()
+	->GetPawn<AWProtagWizard>()
+	->StatsComp
+	->OnZeroHealthDelegate
+	.AddDynamic(this, &ABossCharacter::HandlePlayerDeath);
+
 	
 }
 
@@ -80,10 +99,26 @@ void ABossCharacter::DetectPawn(APawn* DetectedPawn, APawn* PawnToDetect)
 		return;
 	}
 
+	CombatTarget = DetectedPawn;
+
 	BlackboardComp->SetValueAsEnum(
 		TEXT("CurrentState"),
 		EEnemyState::Range
 	);
+
+	if (BlackboardComp->GetKeyID(TEXT("TargetToFollow")) != FBlackboard::InvalidKey)
+	{
+		BlackboardComp->SetValueAsObject(
+			TEXT("TargetToFollow"),
+			PawnToDetect
+		);
+
+		UE_LOG(LogTemp, Log, TEXT("TargetToFollow set to %s"), *PawnToDetect->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TargetToFollow key not found in blackboard"));
+	}
 
 
 }
@@ -97,5 +132,45 @@ float ABossCharacter::GetDamage()
 	return 10.f;
 }
 
+void ABossCharacter::HandlePlayerDeath()
+{
+	EnemyAIController->GetBlackboardComponent()
+	->SetValueAsEnum(
+		TEXT("CurrentState"), EEnemyState::GameOver
+	);
+
+}
 
 
+
+void ABossCharacter::HandleDeath()
+{
+	float Duration{ PlayAnimMontage(DeathAnim) };
+
+	EnemyAIController->GetBrainComponent()
+		->StopLogic("defeated");
+
+	FindComponentByClass<UCapsuleComponent>()
+		->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	FTimerHandle DestroyTimerHandle;
+
+	GetWorld()->GetTimerManager().SetTimer(
+		DestroyTimerHandle,
+		this,
+		&ABossCharacter::FinishDeathAnim,
+		Duration,
+		false
+	);
+
+}
+
+void ABossCharacter::FinishDeathAnim()
+{
+	Destroy();
+}
+
+void ABossCharacter::PlayHurtAnim()
+{
+	PlayAnimMontage(HitReactAnimMontage);
+}

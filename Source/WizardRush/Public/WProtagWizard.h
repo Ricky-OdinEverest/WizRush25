@@ -26,6 +26,8 @@ class WIZARDRUSH_API AWProtagWizard : public ACharacter, public IMainCharacterIn
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere)
+	float MagicCost{ 10.0f };
 
 
 public:
@@ -64,7 +66,15 @@ public:
 	
 	UMotionWarpingComponent* GetMotionWarpingComponent() const;
 
-	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* PlayerDeathMontage;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* HitReactAnimMontage;
+
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* ShieldCollisionSphere;
 
 	
 protected:
@@ -80,10 +90,12 @@ protected:
 	
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsDead = false;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 	
 	//Movement Functions
 	void MoveForward(float  Value);
@@ -100,5 +112,22 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual float GetDamage() override;
+
+
+	UFUNCTION(BlueprintCallable)
+	void HandleDeath();
+
+	UFUNCTION(BlueprintCallable)
+	void MakeBlockCollision();
+
+	bool BlockCheck(AActor* Opponent);
+
+	virtual bool CanTakeDamage() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool blockPlaying{ false };
+
+	UFUNCTION(BlueprintCallable)
+	void PlayHurtAnim();
 
 };

@@ -11,6 +11,7 @@
 #include "Combat/WDashComponent.h"
 #include "MotionWarpingComponent.h"
 #include "Combat/WProjectileCombatComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/Stats/StatsComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -31,6 +32,7 @@ AWProtagWizard::AWProtagWizard()
 	SpringArmComponent->bDoCollisionTest = false;
 	
 
+
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");
 	CameraComp->SetupAttachment(SpringArmComponent);
 
@@ -50,6 +52,17 @@ AWProtagWizard::AWProtagWizard()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
 
 	PlayerMotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
+
+
+	// Shield Collision Sphere
+	ShieldCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("ShieldCollisionSphere"));
+	ShieldCollisionSphere->SetupAttachment(RootComponent);
+	ShieldCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ShieldCollisionSphere->InitSphereRadius(50.f);
+
+	//Debug
+	ShieldCollisionSphere->SetHiddenInGame(false);
+	ShieldCollisionSphere->SetVisibility(true);
 	
 }
 
@@ -176,5 +189,57 @@ void AWProtagWizard::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 float AWProtagWizard::GetDamage()
 {
 	return 10.f;
+}
+
+void AWProtagWizard::HandleDeath()
+{
+	PlayAnimMontage(PlayerDeathMontage);
+
+	IsDead = true;
+
+	DisableInput(GetController<APlayerController>());
+
+}
+
+void AWProtagWizard::MakeBlockCollision()
+{
+}
+
+bool AWProtagWizard::BlockCheck(AActor* Opponent)
+{
+	/**ACharacter* CharacterRef{ GetOwner<ACharacter>() };
+
+	if (!CharacterRef->Implements<UMainPlayer>()) { return true; }
+
+	IMainPlayer* PlayerRef{ Cast<IMainPlayer>(CharacterRef) };
+	
+	FVector OpponentForward{ Opponent->GetActorForwardVector() };
+	FVector PlayerForward{ CharacterRef->GetActorForwardVector() };
+
+	double Result{ FVector::DotProduct(OpponentForward, PlayerForward) };
+
+	if (Result > 0 || !PlayerRef->HasEnoughStamina(StaminaCost)) 
+	{ 
+		return true; 
+	}*/
+
+	return false;
+
+}
+
+bool AWProtagWizard::CanTakeDamage()
+{
+	if (PlayerAnim->bIsBlocking) 
+	{
+		return false;
+	}
+
+	return true;
+
+}
+
+void AWProtagWizard::PlayHurtAnim()
+{
+	PlayAnimMontage(HitReactAnimMontage);
 }
 

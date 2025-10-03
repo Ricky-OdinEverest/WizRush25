@@ -88,7 +88,7 @@ void UMeleeCombatComponent::AttackTrace() const
 		ETraceTypeQuery::TraceTypeQuery1,
 		true,
 		ActorsToIgnore,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		BoxHit,
 		true
 	);

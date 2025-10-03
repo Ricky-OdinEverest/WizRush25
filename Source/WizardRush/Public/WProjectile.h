@@ -22,6 +22,10 @@ public:
 	// Sets default values for this actor's properties
 	AWProjectile();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack", meta = (ExposeOnSpawn = "true"))
+	float ProjectileSpeed = 3000.0f;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -38,8 +42,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BluePrintReadOnly)
 	UNiagaraComponent* NiagaraEffectComp;
    	
-   	UPROPERTY(EditAnywhere, Category = "Attack")
-    float ProjectileSpeed = 3000.0f;
+
 
 public:	
 	// Called every frame
