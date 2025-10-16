@@ -37,8 +37,11 @@ public:
 	void DashCharge();
 	UFUNCTION(BlueprintCallable)
 	void DashInitiate();
+
+	UFUNCTION(BlueprintCallable)
+	void DashInterrupt();
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dashing", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Dashing", meta = (AllowPrivateAccess = "true"))
 	bool bIsDashing;
 
 	UFUNCTION(BlueprintCallable, Category = "Dashing")

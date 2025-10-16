@@ -4,12 +4,14 @@
 #include "Characters/BossCharacter.h"
 
 #include "AIController.h"
+#include "NiagaraFunctionLibrary.h"
 #include "WProtagWizard.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/Stats/StatsComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABossCharacter::ABossCharacter()
@@ -63,14 +65,32 @@ void ABossCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetFirstPlayerController()
-	->GetPawn<AWProtagWizard>()
-	->StatsComp
-	->OnZeroHealthDelegate
-	.AddDynamic(this, &ABossCharacter::HandlePlayerDeath);
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	{
+		if (AWProtagWizard* PlayerPawn = Cast<AWProtagWizard>(PC->GetPawn()))
+		{
+			if (PlayerPawn->StatsComp)
+			{
+				PlayerPawn->StatsComp->OnZeroHealthDelegate.AddDynamic(this, &ABossCharacter::HandlePlayerDeath);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("PlayerPawn->StatsComp is null in BossCharacter"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to cast PlayerPawn to AWProtagWizard in BossCharacter"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("GetFirstPlayerController returned null in BossCharacter"));
+	}
 
 	
 }
+
 
 // Called every frame
 void ABossCharacter::Tick(float DeltaTime)
@@ -125,8 +145,73 @@ void ABossCharacter::DetectPawn(APawn* DetectedPawn, APawn* PawnToDetect)
 
 void ABossCharacter::GetHit(const FVector& ImpactPoint, const AActor* Othercomp)
 {
-}
+	// Spawn Niagara effect at impact point
+	if (HitEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			HitEffect,
+			ImpactPoint,
+			FRotator::ZeroRotator
+		);
+	}
 
+	// Play sound at location
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			ImpactPoint
+		);
+	}
+
+	
+}
+void ABossCharacter::GetHitMelee(const FVector& ImpactPoint, const AActor* Othercomp, bool Knockdown)
+{
+	// Spawn Niagara effect at impact point
+	if (HitEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			HitEffect,
+			ImpactPoint,
+			FRotator::ZeroRotator
+		);
+	}
+
+	// Play sound at location
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			ImpactPoint
+		);
+	}
+	
+	if (!Invincible)
+	{
+		EnemyAIController->GetBlackboardComponent()
+		->SetValueAsEnum(
+	TEXT("CurrentState"), EEnemyState::TakingDamage
+	);
+		
+			EnemyAIController->GetBlackboardComponent()
+			->SetValueAsEnum(
+		TEXT("HandleDamage"), EHandleDamage::MeleeDamage
+	);
+		PlayHurtAnim(Knockdown);
+
+		
+	}
+
+
+	
+
+	//Invincible = true;
+}
 float ABossCharacter::GetDamage()
 {
 	return 10.f;
@@ -170,7 +255,62 @@ void ABossCharacter::FinishDeathAnim()
 	Destroy();
 }
 
-void ABossCharacter::PlayHurtAnim()
+void ABossCharacter::PlayHurtAnim( bool Knockdown)
 {
-	PlayAnimMontage(HitReactAnimMontage);
+	if(Knockdown)
+	{
+		PlayAnimMontage(KnockdownAnim);
+		bIsKnockedDown = true;
+		Invincible = true;
+
+		EnemyAIController->GetBlackboardComponent()
+	   ->SetValueAsEnum(
+	TEXT("CurrentState"), EEnemyState::Idle
+);
+
+		if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+		{
+			// Create a dynamic delegate for when montage ends
+			FOnMontageEnded KnockedDownDelegate;
+			KnockedDownDelegate.BindUObject(this, &ABossCharacter::GetUp);
+
+			AnimInstance->Montage_SetEndDelegate(KnockedDownDelegate, KnockdownAnim);
+		}
+
+	}
+	else
+	{
+		PlayAnimMontage(HitReactAnimMontage);
+	}
+	
+}
+
+void ABossCharacter::GetUp(UAnimMontage* Montage, bool bInterrupted)
+{
+	// When knockdown montage ends, play get-up animation
+	if (Montage == KnockdownAnim && !bInterrupted)
+	{
+		bIsKnockedDown = false;
+		/*PlayAnimMontage(GetUpAnim);
+	
+		if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance() )
+        {
+        	// Create a dynamic delegate for when montage ends
+        	FOnMontageEnded GotUpDelegate;
+        	GotUpDelegate.BindUObject(this, &ABossCharacter::RecoveredFromKnockdown);
+
+        	AnimInstance->Montage_SetEndDelegate(GotUpDelegate, GetUpAnim);
+        }*/
+		
+	}
+}
+
+
+void ABossCharacter::RecoveredFromKnockdown(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage == GetUpAnim && !bInterrupted)
+	{
+		bIsKnockedDown = false;
+	}
+	
 }

@@ -78,16 +78,19 @@ void UMeleeAutoCloseComponent::StartLockon( double BoxCollisionLength, double Bo
 	}; // Get the midpoint of the sweep
 
 	// Draw the debug box at the midpoint of the sweep (which covers the entire sweep path)
-
-	/*UKismetSystemLibrary::DrawDebugBox(
-		GetWorld(),
-		BoxCenter,
-		Box.GetExtent(),
-		bHasFoundTarget ? FColor::Green : FColor::Red,
-		ShapeRotation.Rotator(),
+if (DebugWarpBox)
+{
+	UKismetSystemLibrary::DrawDebugBox(
+	GetWorld(),
+	BoxCenter,
+	Box.GetExtent(),
+	bHasFoundTarget ? FColor::Green : FColor::Red,
+	ShapeRotation.Rotator(),
 2.0f,
 2.0f
-		);*/
+	);
+}
+
 	
 	if (!bHasFoundTarget) {return;}
 
@@ -165,15 +168,18 @@ void UMeleeAutoCloseComponent::StartLockonMotionWarping(double BoxCollisionLengt
 
 	// Draw the debug box at the midpoint of the sweep (which covers the entire sweep path)
 
-	/*UKismetSystemLibrary::DrawDebugBox(
-		GetWorld(),
-		BoxCenter,
-		Box.GetExtent(),
-		bHasFoundTarget ? FColor::Green : FColor::Red,
-		ShapeRotation.Rotator(),
-2.0f,
-2.0f
-		);*/
+	if (DebugWarpBox)
+	{
+		UKismetSystemLibrary::DrawDebugBox(
+			GetWorld(),
+			BoxCenter,
+			Box.GetExtent(),
+			bHasFoundTarget ? FColor::Green : FColor::Red,
+			ShapeRotation.Rotator(),
+	2.0f,
+	2.0f
+			);
+	}
 	
 	if (!bHasFoundTarget) {return;}
 
@@ -249,16 +255,7 @@ void UMeleeAutoCloseComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (!IsValid(CurrentTargetActor)) { return; }
-	if (GEngine)
-	{
-		FString ActorName = CurrentTargetActor->GetName();
-		GEngine->AddOnScreenDebugMessage(
-			-1,                          // Key (-1 = auto add)
-			0.0f,                        // Display time (0 = one frame)
-			FColor::Green,              // Text color
-			FString::Printf(TEXT("Current Target: %s"), *ActorName)
-		);
-	}
+
 
 }
 

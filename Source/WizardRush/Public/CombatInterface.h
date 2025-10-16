@@ -29,5 +29,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void SendImpact(const FHitResult& InHit) ;
+
+	virtual void GetHitMelee(const FVector& ImpactPoint, const AActor* Othercomp, bool Knockdown) { return; }
 	
 };

@@ -33,6 +33,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnUpdatedTargetSignature OnUpdatedTargetDelegate;
 
+	UPROPERTY(EditAnywhere)
+	bool DebugWarpBox = false;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

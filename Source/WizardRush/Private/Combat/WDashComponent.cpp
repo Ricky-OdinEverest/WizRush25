@@ -112,7 +112,7 @@ void UWDashComponent::DashCharge()
 
 void UWDashComponent::DashInitiate()
 {
-	
+	if (!bIsDashing) return;
 	bIsDashing = false;  // End dashCharge state
 	// Calculate teleport distance based on DashChargeTime
 	float TeleportDistanceMultiplier = 2500.0f; // Adjust this to control how fast teleport distance increases
@@ -161,4 +161,25 @@ void UWDashComponent::DashInitiate()
      
 	MovementComp->MaxWalkSpeed = 600.0f;  // Reset speed
 	MovementComp->RotationRate = FRotator(0.0f, 720.0f, 0.0f); //Lower Rotation Speed
+}
+
+void UWDashComponent::DashInterrupt()
+{
+	bIsDashing = false; 
+	// Reset DashChargeTime after teleporting
+	DashChargeTime = 0.0f;
+
+	// Reset movement properties
+	MovementComp->MaxWalkSpeed = 600.0f;  // Reset speed
+	MovementComp->RotationRate = FRotator(0.0f, 720.0f, 0.0f); // Lower Rotation Speed
+
+	// Reset DashChargeTime after teleporting
+	DashChargeTime = 0.0f;
+	
+
+	if (TeleportMarkerInstance)
+	{
+		TeleportMarkerInstance->Destroy();
+		TeleportMarkerInstance = nullptr;
+	}
 }

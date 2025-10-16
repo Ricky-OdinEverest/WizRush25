@@ -24,7 +24,7 @@ public:
 	// Sets default values for this component's properties
 	UMeleeCombatComponent();
   
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MeleeAttack", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "MeleeAttack", meta = (AllowPrivateAccess = "true"))
 	bool bIsMeleeAttacking;
 
 	UFUNCTION(BlueprintCallable, Category = "MeleeAttack")
@@ -69,6 +69,14 @@ public:
 	void HandleResetCombo();
 	
 	UFUNCTION(BlueprintCallable)
-	void AttackTrace() const;
-		
+	void AttackTrace(bool Knockdown) const;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bIsWindingUp;
+
+	UFUNCTION(BlueprintCallable)
+	void WindUpOn() ;
+
+	UFUNCTION(BlueprintCallable)
+	void WindUpOff() ;
 };

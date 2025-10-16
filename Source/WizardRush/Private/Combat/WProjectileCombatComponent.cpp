@@ -150,7 +150,8 @@ void UWProjectileCombatComponent::RotateCharacterToMouseCursor()
 void UWProjectileCombatComponent::PrimaryAttack()
 {
 
-	//PlayAnimMontage(AttackAnim);
+
+		
 
 	CharacterRef->GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &UWProjectileCombatComponent::PrimaryAttack_TimeElapsed, 0.2f);
 

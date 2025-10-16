@@ -3,9 +3,10 @@
 
 #include "WProjectile.h"
 #include "Components/SphereComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
+//#include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "NiagaraComponent.h"
+#include "WizPMC.h"
 
 // Sets default values
 AWProjectile::AWProjectile()
@@ -27,7 +28,7 @@ AWProjectile::AWProjectile()
 	NiagaraEffectComp->SetupAttachment(SphereComp);
 
 	
-	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
+	MovementComp = CreateDefaultSubobject<UWizPMC>("MovementComp");
 	MovementComp->InitialSpeed = ProjectileSpeed;
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;

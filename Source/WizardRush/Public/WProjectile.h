@@ -7,7 +7,8 @@
 #include "WProjectile.generated.h"
 
 class USphereComponent;
-class UProjectileMovementComponent;
+//changedToCustom
+class UWizPMC;
 class UParticleSystemComponent;
 
 class  UNiagaraComponent;
@@ -34,7 +35,7 @@ protected:
     USphereComponent* SphereComp;
     
    	UPROPERTY(VisibleAnywhere, BluePrintReadOnly)
-   	UProjectileMovementComponent* MovementComp;
+   	UWizPMC* MovementComp;
     
    	UPROPERTY(VisibleAnywhere, BluePrintReadOnly)
    	UParticleSystemComponent* EffectComp;

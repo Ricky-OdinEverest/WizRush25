@@ -10,6 +10,7 @@
 #include "Combat/TraceComponent.h"
 #include "Combat/WDashComponent.h"
 #include "MotionWarpingComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Combat/WProjectileCombatComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/Stats/StatsComponent.h"
@@ -229,6 +230,8 @@ bool AWProtagWizard::BlockCheck(AActor* Opponent)
 
 bool AWProtagWizard::CanTakeDamage()
 {
+	if(bPostHitInvincible) return false;
+	
 	if (PlayerAnim->bIsBlocking) 
 	{
 		return false;
@@ -240,6 +243,73 @@ bool AWProtagWizard::CanTakeDamage()
 
 void AWProtagWizard::PlayHurtAnim()
 {
+	if(bPostHitInvincible)
+	{
+
+		return;
+	}
+	if (PlayerAnim->bIsBlocking) return;
+
+	bPostHitInvincible = true;
+
 	PlayAnimMontage(HitReactAnimMontage);
+
+	ProjectileCombatComp->StopAiming();
+	ProjectileCombatComp->StopRepeatingAttack();
+	MeleeCombatComp->HandleResetAttack();
+	MeleeCombatComp->HandleResetCombo();
+	DashComponent->DashInterrupt();
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 }
 
+
+FRotator AWProtagWizard::GetMeleeRotationWarpTarget(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const
+{
+	const UCharacterMovementComponent* CMC = GetCharacterMovement();
+	if (!CMC)
+	{
+		DeltaRotation = FRotator::ZeroRotator;
+		return CurrentRotation;
+	}
+	
+	FVector Direction = CMC->GetCurrentAcceleration();
+	
+	if (Direction.SizeSquared() < UE_KINDA_SMALL_NUMBER)
+	{
+		// AI path following request can orient us in that direction (it's effectively an acceleration)
+		/*if (CMC->bHasRequestedVelocity && GetCharacterMovement()->RequestedVelocity.SizeSquared() > UE_KINDA_SMALL_NUMBER)
+		{
+			return GetCharacterMovement()->RequestedVelocity.GetSafeNormal().Rotation();
+		}*/
+
+		// Don't change rotation if there is no acceleration.
+		return CurrentRotation;
+	}
+
+	// Rotate toward direction of acceleration.
+	return Direction.Rotation();
+}
+
+void AWProtagWizard::GetHitMelee(const FVector& ImpactPoint, const AActor* Othercomp, bool Knockdown)
+{
+	// Spawn Niagara effect at impact point
+	if (HitEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			HitEffect,
+			ImpactPoint,
+			FRotator::ZeroRotator
+		);
+	}
+
+	// Play sound at location
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			ImpactPoint
+		);
+	}
+}

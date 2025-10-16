@@ -61,7 +61,7 @@ public:
 	bool IsAiming() const { return bIsAiming; }
 
 	// Flag to indicate if the character is currently aiming
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
 	bool bIsAiming;
 	
 	void RotateCharacterToMouseCursor(ACharacter* InstigatorCharacter);

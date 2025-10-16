@@ -43,7 +43,7 @@ void UMeleeCombatComponent::ComboAttack()
 {
 
 	if (!bCanMeleeAttack) {return;}
-
+	bIsWindingUp = true;
 	bIsMeleeAttacking = true;
 	bCanMeleeAttack = false;
 	
@@ -62,6 +62,7 @@ void UMeleeCombatComponent::ComboAttack()
 
 void UMeleeCombatComponent::HandleResetAttack()
 {
+	bIsWindingUp = false;
 	bCanMeleeAttack = true;
 	bIsMeleeAttacking = false;
 }
@@ -71,7 +72,7 @@ void UMeleeCombatComponent::HandleResetCombo()
 	ComboCounter = 0;
 }
 
-void UMeleeCombatComponent::AttackTrace() const
+void UMeleeCombatComponent::AttackTrace(bool Knockdown) const
 {
 	const FVector Start = CharacterRef->GetActorLocation();
 	const FVector End = Start + (CharacterRef->GetActorForwardVector() * LengthFromChar);
@@ -99,9 +100,25 @@ void UMeleeCombatComponent::AttackTrace() const
 
 			ICombatInterface* Combatant{ Cast<ICombatInterface>(GetOwner()) };
 
+			ICombatInterface* EnemyCombatant{ Cast<ICombatInterface>(BoxHit.GetActor()) };
+
 			if (Combatant)
 			{ 
 				CharacterDamage = Combatant->GetDamage();
+				
+				if (EnemyCombatant)
+				{
+					if (Knockdown)
+					{
+						EnemyCombatant->GetHitMelee(BoxHit.GetActor()->GetActorLocation(), GetOwner(), true);
+					}
+					else
+					{
+						EnemyCombatant->GetHitMelee(BoxHit.GetActor()->GetActorLocation(), GetOwner(), false);
+					}
+					
+
+				}
 
 				FDamageEvent TargetAttackedEvent;
 
@@ -114,11 +131,41 @@ void UMeleeCombatComponent::AttackTrace() const
 					GetOwner()->GetInstigatorController(),
 					GetOwner()  
 				);
+
+				FVector KnockbackDirection = (BoxHit.GetActor()->GetActorLocation() - CharacterRef->GetActorLocation()).GetSafeNormal2D();
+				FVector NewLocation = BoxHit.GetActor()->GetActorLocation() + KnockbackDirection * 100.0f;
+
+				BoxHit.GetActor()->SetActorLocation(NewLocation);
+
+
+				// Rotate hit actor to face the player
+				FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(
+					BoxHit.GetActor()->GetActorLocation(),
+					CharacterRef->GetActorLocation()
+				);
+
+				// Only yaw rotation so enemies don’t tilt up/down
+				LookAtRotation.Pitch = 0.f;
+				LookAtRotation.Roll = 0.f;
+
+				// Apply rotation and knockback
+				BoxHit.GetActor()->SetActorRotation(LookAtRotation);
+				BoxHit.GetActor()->SetActorLocation(NewLocation);
+				
 			}
 		
 	}
 }
 
+void UMeleeCombatComponent::WindUpOn() 
+{
+	bIsWindingUp = true;
+}
+
+void UMeleeCombatComponent::WindUpOff() 
+{
+	bIsWindingUp = false;
+}
 
 
 /*

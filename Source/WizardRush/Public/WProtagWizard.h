@@ -112,6 +112,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual float GetDamage() override;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bPostHitInvincible = false;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -130,4 +133,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayHurtAnim();
 
+	UFUNCTION(BlueprintCallable, Category = "OnCarMeleeAttack")
+	FRotator GetMeleeRotationWarpTarget(const FRotator& CurrentRotation, float DeltaTime,
+	                                    FRotator& DeltaRotation) const;
+	virtual void GetHitMelee(const FVector& ImpactPoint, const AActor* Othercomp, bool Knockdown) override;
+	
+	UPROPERTY(EditAnywhere, Category = "VFX")
+	class UNiagaraSystem* HitEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	class USoundBase* HitSound;
+	
 };
