@@ -243,17 +243,18 @@ bool AWProtagWizard::CanTakeDamage()
 
 void AWProtagWizard::PlayHurtAnim()
 {
+	
 	if(bPostHitInvincible)
 	{
 
 		return;
 	}
 	if (PlayerAnim->bIsBlocking) return;
-
-	bPostHitInvincible = true;
-
+	
 	PlayAnimMontage(HitReactAnimMontage);
 
+	bPostHitInvincible = true;
+	
 	ProjectileCombatComp->StopAiming();
 	ProjectileCombatComp->StopRepeatingAttack();
 	MeleeCombatComp->HandleResetAttack();
